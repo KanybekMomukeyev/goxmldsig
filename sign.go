@@ -22,6 +22,16 @@ type SigningContext struct {
 	Canonicalizer Canonicalizer
 }
 
+func NewKanoSigningContext(ks X509KeyStore) *SigningContext {
+	return &SigningContext{
+		Hash:          crypto.SHA1,
+		KeyStore:      ks,
+		IdAttribute:   DefaultIdAttr,
+		Prefix:        "",
+		Canonicalizer: MakeC14N10CommentCanonicalizer(),
+	}
+}
+
 func NewDefaultSigningContext(ks X509KeyStore) *SigningContext {
 	return &SigningContext{
 		Hash:          crypto.SHA256,
