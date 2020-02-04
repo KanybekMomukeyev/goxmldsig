@@ -10,8 +10,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/KanybekMomukeyev/goxmldsig/etreeutils"
 	"github.com/beevik/etree"
-	"github.com/russellhaering/goxmldsig/etreeutils"
 )
 
 type SigningContext struct {
@@ -24,11 +24,12 @@ type SigningContext struct {
 
 func NewKanoSigningContext(ks X509KeyStore) *SigningContext {
 	return &SigningContext{
-		Hash:          crypto.SHA1,
-		KeyStore:      ks,
-		IdAttribute:   DefaultIdAttr,
-		Prefix:        "",
-		Canonicalizer: MakeC14N10CommentCanonicalizer(),
+		Hash:        crypto.SHA1,
+		KeyStore:    ks,
+		IdAttribute: DefaultIdAttr,
+		Prefix:      "",
+		// Canonicalizer: MakeC14N10CommentCanonicalizer(),
+		Canonicalizer: MakeCanonicalXML10ExclusiveComment(),
 	}
 }
 
@@ -128,6 +129,8 @@ func (ctx *SigningContext) constructSignedInfo(el *etree.Element, enveloped bool
 }
 
 func (ctx *SigningContext) ConstructSignature(el *etree.Element, enveloped bool) (*etree.Element, error) {
+	fmt.Printf("\n\nConstructSignature STARTED %s \n\n", "")
+
 	signedInfo, err := ctx.constructSignedInfo(el, enveloped)
 	if err != nil {
 		return nil, err
@@ -202,11 +205,14 @@ func (ctx *SigningContext) ConstructSignature(el *etree.Element, enveloped bool)
 	signatureValue := ctx.createNamespacedElement(sig, SignatureValueTag)
 	signatureValue.SetText(base64.StdEncoding.EncodeToString(rawSignature))
 
-	keyInfo := ctx.createNamespacedElement(sig, KeyInfoTag)
-	x509Data := ctx.createNamespacedElement(keyInfo, X509DataTag)
-	for _, cert := range certs {
-		x509Certificate := ctx.createNamespacedElement(x509Data, X509CertificateTag)
-		x509Certificate.SetText(base64.StdEncoding.EncodeToString(cert))
+	// keyInfo := ctx.createNamespacedElement(sig, KeyInfoTag)
+	// x509Data := ctx.createNamespacedElement(keyInfo, X509DataTag)
+	// for _, cert := range certs {
+	// 	x509Certificate := ctx.createNamespacedElement(x509Data, X509CertificateTag)
+	// 	x509Certificate.SetText(base64.StdEncoding.EncodeToString(cert))
+	// }
+
+	for _, _ = range certs {
 	}
 
 	return sig, nil

@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/KanybekMomukeyev/goxmldsig/etreeutils"
+	"github.com/KanybekMomukeyev/goxmldsig/types"
 	"github.com/beevik/etree"
-	"github.com/russellhaering/goxmldsig/etreeutils"
-	"github.com/russellhaering/goxmldsig/types"
 )
 
 var uriRegexp = regexp.MustCompile("^#[a-zA-Z_][\\w.-]*$")
@@ -127,6 +127,8 @@ func (ctx *ValidationContext) transform(
 	for _, transform := range transforms {
 		algo := transform.Algorithm
 
+		fmt.Printf("\n\nAlgorithmID(algo) %s \n\n", AlgorithmID(algo))
+
 		switch AlgorithmID(algo) {
 		case EnvelopedSignatureAltorithmId:
 			if !removeElementAtPath(el, signaturePath) {
@@ -146,7 +148,7 @@ func (ctx *ValidationContext) transform(
 			if transform.InclusiveNamespaces != nil {
 				prefixList = transform.InclusiveNamespaces.PrefixList
 			}
-			fmt.Printf("\n\nprefixList %s \n\n", prefixList)
+			fmt.Printf("\n\nKANOOOOONONNONONONONON transform %s \n\n", prefixList)
 			canonicalizer = MakeCanonicalXML10ExclusiveComment()
 
 		case CanonicalXML11AlgorithmId:
@@ -349,7 +351,13 @@ func (ctx *ValidationContext) findSignature(el *etree.Element) (*types.Signature
 					// this behavior we can drop this, as well as the adding and
 					// removing of elements below.
 					canonicalSignedInfo = detachedSignedInfo
-
+				case CanonicalXML10ExclusiveCommentAlgorithmId:
+					err := etreeutils.TransformExcC14n(detachedSignedInfo, "")
+					if err != nil {
+						return err
+					}
+					fmt.Printf("\n\n KANOOOOONONNONONONONON findSignature %s \n\n", "")
+					canonicalSignedInfo = detachedSignedInfo
 				case CanonicalXML11AlgorithmId:
 					canonicalSignedInfo = canonicalPrep(detachedSignedInfo, map[string]struct{}{})
 
