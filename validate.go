@@ -150,7 +150,7 @@ func (ctx *ValidationContext) transform(
 			}
 			fmt.Printf("\n\nKANOOOOONONNONONONONON transform %s \n\n", prefixList)
 			canonicalizer = MakeCanonicalXML10ExclusiveComment()
-
+			
 		case CanonicalXML11AlgorithmId:
 			canonicalizer = MakeC14N11Canonicalizer()
 

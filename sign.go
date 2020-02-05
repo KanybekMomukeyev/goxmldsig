@@ -43,6 +43,16 @@ func NewDefaultSigningContext(ks X509KeyStore) *SigningContext {
 	}
 }
 
+func ExampleDefaultSigningContext(ks X509KeyStore) *SigningContext {
+	return &SigningContext{
+		Hash:          crypto.SHA1,
+		KeyStore:      ks,
+		IdAttribute:   DefaultIdAttr,
+		Prefix:        "",
+		Canonicalizer: MakeC14N10ExclusiveCanonicalizerWithPrefixList(""),
+	}
+}
+
 func (ctx *SigningContext) SetSignatureMethod(algorithmID string) error {
 	hash, ok := signatureMethodsByIdentifier[algorithmID]
 	if !ok {
@@ -65,7 +75,6 @@ func (ctx *SigningContext) digest(el *etree.Element) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return hash.Sum(nil), nil
 }
 
@@ -100,7 +109,6 @@ func (ctx *SigningContext) constructSignedInfo(el *etree.Element, enveloped bool
 
 	// /SignedInfo/Reference
 	reference := ctx.createNamespacedElement(signedInfo, ReferenceTag)
-
 	dataId := el.SelectAttrValue(ctx.IdAttribute, "")
 	if dataId == "" {
 		reference.CreateAttr(URIAttr, "")
@@ -129,7 +137,6 @@ func (ctx *SigningContext) constructSignedInfo(el *etree.Element, enveloped bool
 }
 
 func (ctx *SigningContext) ConstructSignature(el *etree.Element, enveloped bool) (*etree.Element, error) {
-	fmt.Printf("\n\nConstructSignature STARTED %s \n\n", "")
 
 	signedInfo, err := ctx.constructSignedInfo(el, enveloped)
 	if err != nil {
